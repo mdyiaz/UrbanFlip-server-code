@@ -45,6 +45,13 @@ async function run () {
     try{
         const serviceCollection = client.db('assignment-11').collection('services');
 
+        const reviewCollection= client.db('assignment-11').collection('reviews');
+
+
+
+
+
+
         app.get('/services' , async (req, res) => {
             const id = parseInt(req.query.limit);
             const query = {}
@@ -76,12 +83,40 @@ async function run () {
 
         app.get('/services/:id', async (req, res) => {
             const id = req.params.id;
-            console.log(id);
             const query = { _id: ObjectId(id) };
             const services = await serviceCollection.findOne(query);
-            console.log(services);
             res.send(services);
         });
+
+
+
+
+
+
+
+        app.post('/reviews', async(req, res) => {
+            const review = req.body;
+            const result = await reviewCollection.insertOne(review);
+            res.send(result);
+        })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 
 
