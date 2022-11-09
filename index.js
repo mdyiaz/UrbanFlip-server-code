@@ -51,7 +51,7 @@ async function run () {
 
 
 
-
+// getting services____
         app.get('/services' , async (req, res) => {
             const id = parseInt(req.query.limit);
             const query = {}
@@ -80,7 +80,7 @@ async function run () {
 
 
 
-
+// getting specific services________
         app.get('/services/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
@@ -98,24 +98,9 @@ async function run () {
 
 
 
-        app.get('/reviews', async (req, res) => {
-            const query = {};
-            const cursor = reviewCollection.find(query);
-            const reviews = await cursor.toArray();
-            res.send(reviews);
-        })
 
 
-
-
-
-
-
-
-
-
-
-
+// post_reviews__________
         app.post('/reviews', async(req, res) => {
             const review = req.body;
             const result = await reviewCollection.insertOne(review);
@@ -131,10 +116,35 @@ async function run () {
 
 
 
+// getting reviews for MyReview Router_________
+        app.get('/reviews', async (req, res) => {
+            
+            let query = {};
+            if(req.query.email){
+                query = {
+                    email: req.query.email
+                }
+            }
+
+            const cursor = reviewCollection.find(query);
+            const reviews = await cursor.toArray();
+            res.send(reviews);
+        })
 
 
 
 
+
+
+
+
+        // getting Review___________________
+        app.get('/reviews/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const reviews = await reviewCollection.findOne(query);
+            res.send(reviews);
+        });
 
 
 
