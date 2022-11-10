@@ -71,6 +71,8 @@ async function run () {
 
         const reviewCollection= client.db('assignment-11').collection('reviews');
 
+        const addServiceCollection = client.db('assignment-11').collection('addservice');
+
 
 
         // jwt Token________
@@ -161,7 +163,22 @@ async function run () {
 
 
 
+        // for adservices____
+        app.post('/addservice', async(req, res) => {
+            const review = req.body;
+            const result = await addServiceCollection.insertOne(review);
+            res.send(result);
+        })
 
+
+
+
+        app.get('/addservice', async (req, res) => {
+            let query = {};
+            const cursor = addServiceCollection.find(query);
+            const reviews = await cursor.toArray();
+            res.send(reviews);
+        })
 
 
 
