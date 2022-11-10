@@ -40,12 +40,12 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
         function verifyJWT(req, res, next){
             const authHeader = req.headers.authorization;
             if(!authHeader){
-                res.status(401).send({message: 'unauthorized access'})
+                return res.status(401).send({message: 'unauthorized access'})
             }
              const token = authHeader.split(' ')[1];
             jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, function(err, decoded){
                 if(err){
-                    res.status(401).send({message: 'unauthorized access'})
+                   return res.status(403).send({message: 'unauthorized access'});
                 }
                 req.decoded = decoded;
                 next();
@@ -73,40 +73,12 @@ async function run () {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
         // jwt Token________
         app.post('/jwt', (req, res) => {
             const user = req.body;
-           const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h'})
+           const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1d'})
            res.send({token});
         })
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -116,25 +88,10 @@ async function run () {
             const query = {}
             const cursor = serviceCollection.find(query);
             const services = await cursor.limit(id).toArray();
+            console.log(services);
             res.send(services);
+            
         })
-
-
-
-
-
-
-
-
-        // app.get('/services' , async (req, res) => {
-        //     const query = {}
-        //     const cursor = serviceCollection.find(query);
-        //     const services = await cursor.toArray();
-        //     res.send(services);
-        // })
-
-
-
 
 
 
@@ -144,18 +101,9 @@ async function run () {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const services = await serviceCollection.findOne(query);
+            // console.log(services);
             res.send(services);
         });
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -168,18 +116,15 @@ async function run () {
 
 
 
-
-
-
-
-
-
-
 // getting reviews for MyReview Router_________
-        app.get('/reviews', verifyJWT, async (req, res) => {
+        app.get('/reviews', async (req, res) => {
             
-
-            console.log(req.headers.authorization);
+            // const decoded = req.decoded;
+            
+            // if(decoded.email !== req.query.email){
+            //     res.status(403).send({message: 'unauthorized access'})
+            // }
+            
             let query = {};
             if(req.query.email){
                 query = {
@@ -193,12 +138,6 @@ async function run () {
         })
 
 
-
-
-
-
-
-
         // getting Review___________________
         app.get('/reviews/:id', async (req, res) => {
             const id = req.params.id;
@@ -209,20 +148,13 @@ async function run () {
 
 
 
-
-
-
         // delete Review___________
-        app.delete('/reviews/:id', async (req, res) => {
+        app.delete('/reviews/:id', verifyJWT,  async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const result = await reviewCollection.deleteOne(query);
             res.send(result);
         })
-
-
-
-
 
 
 
