@@ -57,11 +57,23 @@ async function run () {
 
 
 
+        // jwt Function________________
+         function verifyJWT(req, res, next){
+
+            // next()
+         }
+
+
+
+
+
+
 
         // jwt Token________
         app.post('/jwt', (req, res) => {
-            const user = request.body;
-            console.log(user);
+            const user = req.body;
+           const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h'})
+           res.send({token});
         })
 
 
@@ -147,8 +159,10 @@ async function run () {
 
 
 // getting reviews for MyReview Router_________
-        app.get('/reviews', async (req, res) => {
+        app.get('/reviews', verifyJWT, async (req, res) => {
             
+
+            console.log(req.headers.authorization);
             let query = {};
             if(req.query.email){
                 query = {
